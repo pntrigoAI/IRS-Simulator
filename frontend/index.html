@@ -1,33 +1,270 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de IRS</title>
+    <title>Simulador IRS 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .section-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .input-field { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; font-size: 15px; transition: all 0.2s; }
+        .input-field:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .section-title { font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 20px; }
+        .label-text { font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; display: block; }
+        .btn-primary { background: #3b82f6; color: white; padding: 16px; border-radius: 10px; font-weight: 600; font-size: 16px; transition: all 0.2s; border: none; cursor: pointer; width: 100%; }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .result-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 32px; border-radius: 12px; text-align: center; }
+        .result-value { font-size: 48px; font-weight: 700; margin: 12px 0; }
+        .detail-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f3f4f6; }
+        .detail-row:last-child { border-bottom: none; }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="max-w-lg mx-auto mt-10 p-5 bg-white rounded shadow">
-        <h1 class="text-2xl font-bold mb-5 text-center">Simulador de IRS</h1>
-        <form id="irsForm" class="space-y-4">
-            <div>
-                <label for="income" class="block mb-2">Rendimento Bruto (€):</label>
-                <input type="number" id="income" name="income" class="w-full p-2 border rounded" required>
-            </div>
-            <div>
-                <label for="dependents" class="block mb-2">Número de Dependentes:</label>
-                <input type="number" id="dependents" name="dependents" class="w-full p-2 border rounded" required>
-            </div>
-            <div>
-                <label for="expenses" class="block mb-2">Despesas (€):</label>
-                <input type="number" id="expenses" name="expenses" class="w-full p-2 border rounded" required>
-            </div>
-            <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600">Calcular</button>
-        </form>
-        <div id="result" class="mt-5 text-center text-lg font-semibold"></div>
-        <canvas id="chart" class="mt-5 w-full h-64"></canvas>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-6 py-8">
+            <h1 class="text-4xl font-bold text-gray-900">Simulador IRS 2026</h1>
+            <p class="text-gray-600 mt-2">Calcula o teu IRS de forma simples e rápida</p>
+        </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        
+        <form id="irsForm">
+            
+            <!-- Informação Geral -->
+            <div class="section-card">
+                <h2 class="section-title">Informação Geral</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label-text">Tipo de tributação</label>
+                        <select id="taxType" class="input-field w-full">
+                            <option value="single">Solteiro / Divorciado / Viúvo</option>
+                            <option value="married">Casado / União de facto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-text">IRS Jovem</label>
+                        <select id="irsJovem" class="input-field w-full">
+                            <option value="nao">Não</option>
+                            <option value="sim">Sim</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dependentes -->
+            <div class="section-card">
+                <h2 class="section-title">Dependentes</h2>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="label-text">Com 3 anos ou menos</label>
+                        <input type="number" id="dep0_3" min="0" value="0" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="label-text">Entre 4 e 6 anos</label>
+                        <input type="number" id="dep4_6" min="0" value="0" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="label-text">Com mais de 6 anos</label>
+                        <input type="number" id="dep6plus" min="0" value="0" class="input-field w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rendimentos -->
+            <div class="section-card">
+                <h2 class="section-title">Rendimentos</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label-text">Rendimento bruto anual</label>
+                        <div class="relative">
+                            <input type="number" id="income" min="0" step="0.01" required class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">Retenção na fonte</label>
+                        <div class="relative">
+                            <input type="number" id="withheld" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deduções à Coleta -->
+            <div class="section-card">
+                <h2 class="section-title">Deduções à Coleta</h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label-text">Despesas gerais e familiares</label>
+                        <div class="relative">
+                            <input type="number" id="generalExpenses" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">Saúde e seguros de saúde</label>
+                        <div class="relative">
+                            <input type="number" id="healthExpenses" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">Educação e formação</label>
+                        <div class="relative">
+                            <input type="number" id="educationExpenses" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">Encargos com imóveis</label>
+                        <div class="relative">
+                            <input type="number" id="housingExpenses" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">PPR</label>
+                        <div class="relative">
+                            <input type="number" id="ppr" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label-text">Donativos</label>
+                        <div class="relative">
+                            <input type="number" id="donations" min="0" step="0.01" value="0" class="input-field w-full pr-12">
+                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-primary">
+                Calcular IRS
+            </button>
+        </form>
+
+        <!-- Results -->
+        <div id="results" class="hidden mt-8">
+            
+            <!-- Main Result -->
+            <div class="result-card mb-6">
+                <p class="text-sm opacity-90 uppercase tracking-wide">Resultado da Simulação</p>
+                <div id="finalValue" class="result-value"></div>
+                <p id="finalValueDesc" class="text-sm opacity-90"></p>
+            </div>
+
+            <!-- Details -->
+            <div class="section-card">
+                <h2 class="section-title">Detalhes do Cálculo</h2>
+                <div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Rendimento coletável</span>
+                        <span id="collectableIncome" class="font-semibold text-gray-900"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Imposto calculado</span>
+                        <span id="baseTax" class="font-semibold text-gray-900"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Deduções específicas</span>
+                        <span id="specificDeductions" class="font-semibold text-green-600"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Deduções à coleta</span>
+                        <span id="deductionsToColeta" class="font-semibold text-green-600"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Coleta (IRS a pagar)</span>
+                        <span id="coleta" class="font-semibold text-gray-900"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="text-gray-600">Retenção na fonte</span>
+                        <span id="withheldDisplay" class="font-semibold text-gray-900"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="section-card mt-6">
+                <h2 class="section-title">Visualização</h2>
+                <canvas id="chart" class="w-full" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Tax Brackets -->
+        <div class="section-card mt-8">
+            <h2 class="section-title">Escalões de IRS 2026</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Escalão</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Rendimento coletável</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-700">Taxa</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">1º</td>
+                            <td class="py-3 px-4 text-gray-900">Até €7.112</td>
+                            <td class="py-3 px-4 text-right font-medium">14,5%</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">2º</td>
+                            <td class="py-3 px-4 text-gray-900">De €7.113 a €10.732</td>
+                            <td class="py-3 px-4 text-right font-medium">23%</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">3º</td>
+                            <td class="py-3 px-4 text-gray-900">De €10.733 a €20.322</td>
+                            <td class="py-3 px-4 text-right font-medium">28,5%</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">4º</td>
+                            <td class="py-3 px-4 text-gray-900">De €20.323 a €25.075</td>
+                            <td class="py-3 px-4 text-right font-medium">35%</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">5º</td>
+                            <td class="py-3 px-4 text-gray-900">De €25.076 a €36.967</td>
+                            <td class="py-3 px-4 text-right font-medium">37,5%</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">6º</td>
+                            <td class="py-3 px-4 text-gray-900">De €36.968 a €80.882</td>
+                            <td class="py-3 px-4 text-right font-medium">45%</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 text-gray-600">7º</td>
+                            <td class="py-3 px-4 text-gray-900">Superior a €80.882</td>
+                            <td class="py-3 px-4 text-right font-medium">48%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-5xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
+            <p>Simulador IRS 2026 | Este simulador é meramente indicativo</p>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
