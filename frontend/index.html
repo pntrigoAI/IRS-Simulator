@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; }
         .section-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
         .input-field { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; font-size: 15px; transition: all 0.2s; }
@@ -22,20 +23,33 @@
         .result-value { font-size: 48px; font-weight: 700; margin: 12px 0; }
         .detail-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f3f4f6; }
         .detail-row:last-child { border-bottom: none; }
+        .nav-link { color: #6b7280; text-decoration: none; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; font-size: 14px; font-weight: 500; }
+        .nav-link:hover { color: #3b82f6; background: #f3f4f6; }
+        .nav-link.active { color: #3b82f6; background: #eff6ff; }
     </style>
 </head>
 <body class="bg-gray-50">
     
-    <!-- Header -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="max-w-5xl mx-auto px-6 py-8">
-            <h1 class="text-4xl font-bold text-gray-900">Simulador IRS 2026</h1>
-            <p class="text-gray-600 mt-2">Calcula o teu IRS de forma simples e rápida</p>
+    <!-- Header with Navigation -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="flex items-center justify-between py-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Simulador IRS 2026</h1>
+                    <p class="text-xs text-gray-500">Cálculo simples e rápido</p>
+                </div>
+                <nav class="hidden md:flex items-center gap-2">
+                    <a href="#calculator" class="nav-link active">Calculadora</a>
+                    <a href="#escaloes" class="nav-link">Escalões</a>
+                    <a href="https://www.portaldasfinancas.gov.pt" target="_blank" class="nav-link">Portal Finanças</a>
+                    <a href="https://homepage-pntrigoai.vercel.app" target="_blank" class="nav-link">Mais Apps</a>
+                </nav>
+            </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-5xl mx-auto px-6 py-8">
+    <div id="calculator" class="max-w-5xl mx-auto px-6 py-8">
         
         <form id="irsForm">
             
@@ -204,7 +218,7 @@
         </div>
 
         <!-- Tax Brackets -->
-        <div class="section-card mt-8">
+        <div id="escaloes" class="section-card mt-8">
             <h2 class="section-title">Escalões de IRS 2026</h2>
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -256,12 +270,63 @@
             </div>
         </div>
 
+        <!-- Info Section -->
+        <div class="section-card mt-8">
+            <h2 class="section-title">Informação Útil</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">📋 Prazos IRS 2026</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Entrega da declaração: 1 de abril a 30 de junho</li>
+                        <li>• Reembolsos: A partir de julho</li>
+                        <li>• Pagamento: Até 31 de agosto</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">🔗 Links Úteis</h3>
+                    <ul class="text-sm space-y-1">
+                        <li><a href="https://www.portaldasfinancas.gov.pt" target="_blank" class="text-blue-600 hover:underline">Portal das Finanças</a></li>
+                        <li><a href="https://faturas.portaldasfinancas.gov.pt" target="_blank" class="text-blue-600 hover:underline">E-Fatura</a></li>
+                        <li><a href="https://www.at.gov.pt" target="_blank" class="text-blue-600 hover:underline">Autoridade Tributária</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                <p class="text-sm text-yellow-800">
+                    <strong>Aviso:</strong> Este simulador é apenas indicativo. Consulta sempre um contabilista para valores precisos.
+                </p>
+            </div>
+        </div>
+
     </div>
 
     <!-- Footer -->
-    <div class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-5xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
-            <p>Simulador IRS 2026 | Este simulador é meramente indicativo</p>
+    <div class="bg-gray-900 text-gray-300 mt-16">
+        <div class="max-w-5xl mx-auto px-6 py-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-6">
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Simulador IRS 2026</h3>
+                    <p class="text-sm text-gray-400">Ferramenta gratuita para cálculo de IRS em Portugal</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3 text-sm">Menu</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#calculator" class="text-gray-400 hover:text-white">Calculadora</a></li>
+                        <li><a href="#escaloes" class="text-gray-400 hover:text-white">Escalões</a></li>
+                        <li><a href="https://www.portaldasfinancas.gov.pt" target="_blank" class="text-gray-400 hover:text-white">Portal Finanças</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3 text-sm">Outros Projetos</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://homepage-pntrigoai.vercel.app" target="_blank" class="text-gray-400 hover:text-white">Homepage</a></li>
+                        <li><a href="https://ideas-board-ten.vercel.app" target="_blank" class="text-gray-400 hover:text-white">Ideas Board</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+                <p>© 2026 Simulador IRS | Este simulador é meramente indicativo</p>
+            </div>
         </div>
     </div>
 
