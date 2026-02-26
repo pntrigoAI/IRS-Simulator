@@ -1,0 +1,18 @@
+{
+    "2026": {
+        "escaloes": [
+            { "min": 0, "max": 7112, "rate": 0.145 },
+            { "min": 7113, "max": 10732, "rate": 0.23 },
+            { "min": 10733, "max": 20322, "rate": 0.285 },
+            { "min": 20323, "max": 25075, "rate": 0.35 },
+            { "min": 25076, "max": 36967, "rate": 0.375 },
+            { "min": 36968, "max": 80882, "rate": 0.45 },
+            { "min": 80883, "max": null, "rate": 0.48 }
+        ],
+        "deductions": {
+            "dependents": 600,
+            "health": 0.15,
+            "education": 0.30
+        }
+    }
+}
